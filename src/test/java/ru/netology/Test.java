@@ -57,27 +57,26 @@ class Test {
 
     @org.junit.jupiter.api.Test
     void testGettingLocationById() {
-        GeoService geoService = new GeoServiceImpl();
-
-        Country resultLocalhost = geoService.byIp(GeoServiceImpl.LOCALHOST).getCountry();
-
-        Country resultMoscow = geoService.byIp(GeoServiceImpl.MOSCOW_IP).getCountry();
-        Country expectedMoscow = Country.RUSSIA;
-
-        Country resultNY = geoService.byIp(GeoServiceImpl.NEW_YORK_IP).getCountry();
-        Country expectedNY = Country.USA;
-
-        Country resultRussia = geoService.byIp("172.105.66.77").getCountry();
         Country expectedRussia = Country.RUSSIA;
-
-        Country resultUSA = geoService.byIp("96.105.66.77").getCountry();
         Country expectedUSA = Country.USA;
 
+        Country resultLocalhost = getResultCountry(GeoServiceImpl.LOCALHOST);
+        Country resultMoscow = getResultCountry(GeoServiceImpl.MOSCOW_IP);
+        Country resultNY = getResultCountry(GeoServiceImpl.NEW_YORK_IP);
+        Country resultRussia = getResultCountry("172.105.66.77");
+        Country resultUSA = getResultCountry("96.105.66.77");
+
         Assertions.assertNull(resultLocalhost);
-        Assertions.assertEquals(expectedMoscow, resultMoscow);
-        Assertions.assertEquals(expectedNY, resultNY);
+        Assertions.assertEquals(expectedRussia, resultMoscow);
+        Assertions.assertEquals(expectedUSA, resultNY);
         Assertions.assertEquals(expectedRussia, resultRussia);
         Assertions.assertEquals(expectedUSA, resultUSA);
+    }
+
+    private Country getResultCountry(String IP) {
+        GeoService geoService = new GeoServiceImpl();
+
+        return geoService.byIp(IP).getCountry();
     }
 
     @org.junit.jupiter.api.Test
