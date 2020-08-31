@@ -12,11 +12,46 @@ import ru.netology.sender.*;
 
 class Test {
     @org.junit.jupiter.api.Test
-    void testAlwaysRussianSending() {
+    void testSendingWithRussianIp() {
         GeoService geoService = Mockito.mock(GeoService.class);
         Mockito
             .when(geoService.byIp(any(String.class)))
             .thenReturn(new Location("Moscow", Country.RUSSIA, null, 0));
+
+        LocalizationService localizationService = new LocalizationServiceImpl();
+
+        MessageSender messageSender = new MessageSenderImpl(geoService, localizationService);
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put(MessageSenderImpl.IP_ADDRESS_HEADER, "172.123.12.19");
+
+        String result = messageSender.send(headers);
+        String expected = "Добро пожаловать";
+
+        Assertions.assertEquals(expected, result);
+    }
+
+    @org.junit.jupiter.api.Test
+    void testSendingWithEnglishIp() {
+        GeoService geoService = Mockito.mock(GeoService.class);
+        Mockito
+            .when(geoService.byIp(any(String.class)))
+            .thenReturn(new Location("New York", Country.USA, null,  0));
+
+        LocalizationService localizationService = new LocalizationServiceImpl();
+
+        MessageSender messageSender = new MessageSenderImpl(geoService, localizationService);
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put(MessageSenderImpl.IP_ADDRESS_HEADER, "96.44.183.149");
+
+        String result = messageSender.send(headers);
+        String expected = "Welcome";
+
+        Assertions.assertEquals(expected, result);
+    }
+
+    @org.junit.jupiter.api.Test
+    void testGettingCorrectIpForRussianSending() {
+        GeoService geoService = new GeoServiceImpl();
 
         LocalizationService localizationService = Mockito.mock(LocalizationServiceImpl.class);
         Mockito
@@ -34,11 +69,8 @@ class Test {
     }
 
     @org.junit.jupiter.api.Test
-    void testAlwaysEnglishSending() {
-        GeoService geoService = Mockito.mock(GeoService.class);
-        Mockito
-            .when(geoService.byIp(any(String.class)))
-            .thenReturn(new Location("New York", Country.USA, null,  0));
+    void testGettingCorrectIpForEnglishSending() {
+        GeoService geoService = new GeoServiceImpl();
 
         LocalizationService localizationService = Mockito.mock(LocalizationServiceImpl.class);
         Mockito
